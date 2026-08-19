@@ -1,0 +1,138 @@
+/* =========================================================
+SAFETY ZONE — MOTION LAYER
+Add AFTER css/style.css. Replaces AOS entirely.
+========================================================= */
+
+/* AOS off: neutralise leftover attributes so nothing stays hidden */
+[data-aos]{ opacity:1 !important; transform:none !important; }
+
+/* --- initial states (JS adds .sz-ready to <html> once GSAP is up) --- */
+html.sz-ready .sz-reveal{ opacity:0; }
+html.sz-ready .sz-mask-inner{ display:block; opacity:0; }
+.sz-mask{ display:block; overflow:hidden; padding-bottom:.04em; }
+
+/* --- hero --- */
+.hero{ overflow:hidden; }
+.hero .sz-hero-bg{
+  position:absolute; inset:-8% 0;
+  background:url("../images/hero.jpg") center/cover no-repeat;
+  will-change:transform;
+}
+html.sz-ready .hero{ background-image:none; }
+.hero-title span{ overflow:visible; }
+
+/* scroll hint under the hero */
+.sz-scroll-hint{
+  position:absolute; bottom:0; left:50%; width:1px; height:70px;
+  overflow:hidden; z-index:2;
+}
+.sz-scroll-hint::after{
+  content:""; display:block; width:1px; height:100%;
+  background:linear-gradient(180deg,transparent,var(--accent),transparent);
+  animation:szScrollHint 2.4s cubic-bezier(.5,0,.5,1) infinite;
+}
+@keyframes szScrollHint{
+  0%{ transform:translateY(-100%); } 100%{ transform:translateY(100%); }
+}
+
+/* --- buttons: wipe fill instead of a colour swap --- */
+.hero-btn, .cta-btn, .footer-btn{
+  position:relative; overflow:hidden; transform:translateZ(0);
+}
+.hero-btn:hover, .cta-btn:hover, .footer-btn:hover{
+  background:var(--accent); color:var(--black); transform:none;
+}
+.hero-btn .sz-fill, .cta-btn .sz-fill, .footer-btn .sz-fill{
+  position:absolute; inset:0; background:var(--white);
+  border-radius:inherit;
+}
+.hero-btn .sz-label, .cta-btn .sz-label, .footer-btn .sz-label{ position:relative; }
+
+/* --- nav links: rolling label --- */
+.nav-link{ overflow:hidden; display:inline-block; padding:2px 0; }
+.nav-link::after{ display:none; }
+.nav-link .sz-roll{ display:block; }
+.nav-link .sz-roll--alt{
+  position:absolute; inset:0; color:var(--accent-light);
+}
+
+/* --- services: gold wash on hover --- */
+.service-item{ position:relative; overflow:hidden; background:none !important; }
+.service-item .sz-wash{
+  position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(90deg, rgba(169,120,47,.12), transparent 70%);
+  transform:scaleX(0); transform-origin:left;
+}
+.service-item > *{ position:relative; }
+
+/* --- media parallax wrappers --- */
+.services-image, .about-images .sz-media{ position:relative; overflow:hidden; }
+.services-image{ min-height:600px; }
+.services-image img,
+.about-images .sz-media img{
+  position:absolute; inset:-8% 0; width:100%; height:116%;
+  object-fit:cover; will-change:transform;
+}
+.about-images .sz-media{ height:560px; margin-bottom:40px; }
+.about-images .sz-media:last-child{ height:420px; margin-bottom:0; }
+.about-images img:hover{ transform:none; }
+.services-image img{ min-height:0; }
+
+/* stats background parallax */
+.stats-section{ overflow:hidden; }
+.stats-section .sz-bg{
+  position:absolute; inset:-12% 0;
+  background:url("../images/stats.jpg") center/cover no-repeat;
+  will-change:transform;
+}
+.stats-section .sz-tint{ position:absolute; inset:0; background:rgba(8,9,11,.72); }
+.stats-section .container{ position:relative; z-index:2; }
+html.sz-ready .stats-section{ background-image:none; background-color:transparent; }
+
+/* cta background parallax */
+.cta-section{ overflow:hidden; }
+.cta-section .sz-bg{
+  position:absolute; inset:-12% 0;
+  background:url("../images/cta2.jpeg") center/cover no-repeat;
+  will-change:transform;
+}
+html.sz-ready .cta-section{ background-image:none; }
+
+/* --- location cards --- */
+.location-item{ position:relative; overflow:hidden; will-change:transform; }
+.location-item .sz-topline{
+  position:absolute; left:0; top:0; width:100%; height:2px;
+  background:var(--accent); transform:scaleX(0); transform-origin:left;
+}
+
+/* --- client marquee --- */
+.clients-section{ overflow:hidden; }
+.sz-marquee{
+  display:flex; align-items:center; gap:90px; width:max-content; will-change:transform;
+}
+.sz-marquee img{
+  max-width:150px; max-height:70px; object-fit:contain;
+  filter:grayscale(100%); opacity:.5;
+}
+
+/* --- custom cursor --- */
+.sz-cursor-dot, .sz-cursor-ring{
+  position:fixed; top:0; left:0; z-index:9999; pointer-events:none;
+  transform:translate(-50%,-50%); opacity:0; border-radius:50%;
+}
+.sz-cursor-dot{ width:7px; height:7px; background:var(--accent-light); }
+.sz-cursor-ring{ width:44px; height:44px; border:1px solid rgba(217,165,76,.55); z-index:9998; }
+@media (max-width:900px){
+  .sz-cursor-dot, .sz-cursor-ring{ display:none; }
+}
+
+/* --- Lenis smooth scroll --- */
+html.lenis, html.lenis body{ height:auto; }
+html.sz-ready{ scroll-behavior:auto; }
+.lenis.lenis-smooth{ scroll-behavior:auto !important; }
+
+@media (prefers-reduced-motion:reduce){
+  html.sz-ready .sz-reveal{ opacity:1 !important; }
+  html.sz-ready .sz-mask-inner{ opacity:1 !important; }
+  .sz-marquee{ transform:none !important; }
+}

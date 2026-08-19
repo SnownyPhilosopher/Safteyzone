@@ -25,13 +25,6 @@ GLOBAL VARIABLES
 }
 
 
-html{
-
-    scroll-behavior:smooth;
-
-}
-
-
 body{
 
     background:var(--black);
