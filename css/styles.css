@@ -1,0 +1,21 @@
+html, body { margin:0; padding:0; background:#08090B; }
+  body { font-family:'Inter',sans-serif; font-weight:300; color:#F5F4F2; overflow-x:hidden; }
+  * { box-sizing:border-box; }
+  ::selection { background:#A9782F; color:#08090B; }
+  a { color:inherit; text-decoration:none; }
+  a:hover { color:#D9A54C; }
+  h1,h2,h3,h4 { font-family:'Barlow',sans-serif; margin:0; }
+  p, ul { margin:0; }
+  html.lenis, html.lenis body { height:auto; }
+  .lenis.lenis-smooth { scroll-behavior:auto !important; }
+  @keyframes szoBlink { 0%,100% { opacity:1; } 50% { opacity:.25; } }
+  @media (max-width:1000px) {
+    [data-szo-cursor] { display:none !important; }
+    [data-szo-split] { grid-template-columns:1fr !important; }
+    [data-szo-sticky] { position:relative !important; height:70vh !important; top:0 !important; }
+    [data-szo-pad] { padding-left:22px !important; padding-right:22px !important; }
+    [data-szo-nav-links] { display:none !important; }
+    [data-szo-railwrap] { overflow-x:auto !important; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    [data-szo-railwrap]::-webkit-scrollbar { display:none; }
+    [data-szo-rail] > div { height:auto !important; padding:110px 0 !important; }
+  }

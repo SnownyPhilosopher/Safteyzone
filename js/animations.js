@@ -24,6 +24,9 @@ except the two hero lines noted in HERO SPLIT.
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var ease = 'power3.out';
   document.documentElement.classList.add('sz-ready');
+  // content is authored visible; only hide it for animation when motion can actually run
+  var animate = !reduced && document.visibilityState === 'visible';
+  if (animate) document.documentElement.classList.add('sz-anim');
 
   /* ---------- 1. markup prep ---------- */
 
@@ -141,8 +144,12 @@ except the two hero lines noted in HERO SPLIT.
   if (!reduced && window.Lenis) {
     var lenis = new window.Lenis({ duration: 1.05, smoothWheel: true, wheelMultiplier: 0.95, touchMultiplier: 1.4 });
     lenis.on('scroll', ST.update);
-    gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
+    var rafCb = function (t) {
+      try { lenis.raf(t * 1000); } catch (e) { gsap.ticker.remove(rafCb); }
+    };
+    gsap.ticker.add(rafCb);
     gsap.ticker.lagSmoothing(0);
+    window.addEventListener('pagehide', function () { gsap.ticker.remove(rafCb); lenis.destroy(); });
     $('a[href^="#"]').forEach(function (a) {
       a.addEventListener('click', function (e) {
         var id = a.getAttribute('href');
@@ -160,11 +167,26 @@ except the two hero lines noted in HERO SPLIT.
   gsap.set('.sz-roll--alt', { yPercent: 100 });
   gsap.set('.sz-wash, .sz-topline', { scaleX: 0, transformOrigin: 'left center' });
 
-  var tl = gsap.timeline({ delay: 0.15 });
+  var tl = gsap.timeline({ delay: 0.15, paused: !animate });
   tl.fromTo('.live-tag', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.8, ease }, 0)
     .to('.sz-hero-line', { yPercent: 0, duration: 1.15, ease: 'expo.out', stagger: 0.09 }, 0.15)
     .fromTo('.hero-btn', { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.9, ease }, 0.6)
     .fromTo('.sz-hero-bg', { scale: 1.12 }, { scale: 1, duration: 2.2, ease: 'power2.out' }, 0);
+
+  // failsafe: if gsap's ticker never advances (background tab, throttled rAF), jump to the end state
+  if (!animate) tl.progress(1);
+  var startFrame = gsap.ticker.frame;
+  setTimeout(function () {
+    if (gsap.ticker.frame === startFrame || tl.progress() === 0) {
+      tl.progress(1).pause();
+      gsap.set('.sz-mask-inner', { yPercent: 0, opacity: 1 });
+      gsap.set('.sz-reveal', { y: 0, opacity: 1 });
+      document.documentElement.classList.remove('sz-anim');
+    }
+  }, 1400);
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && tl.progress() === 0) tl.play();
+  });
 
   gsap.to('.sz-hero-bg', {
     yPercent: 12, ease: 'none',
@@ -172,7 +194,7 @@ except the two hero lines noted in HERO SPLIT.
   });
 
   /* ---------- 4. scroll reveals ---------- */
-  $('.sz-reveal').forEach(function (el) {
+  if (animate) $('.sz-reveal').forEach(function (el) {
     gsap.fromTo(el, { y: 34, opacity: 0 }, {
       y: 0, opacity: 1, duration: 0.95, ease,
       scrollTrigger: { trigger: el, start: 'top 88%' }
@@ -190,8 +212,10 @@ except the two hero lines noted in HERO SPLIT.
   /* ---------- 5. services: sequential line reveals ---------- */
   $('.service-item').forEach(function (item) {
     var lines = $('h4, li', item);
-    gsap.timeline({ scrollTrigger: { trigger: item, start: 'top 82%' } })
-      .fromTo(lines, { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease, stagger: 0.07 });
+    if (animate) {
+      gsap.timeline({ scrollTrigger: { trigger: item, start: 'top 82%' } })
+        .fromTo(lines, { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease, stagger: 0.07 });
+    }
     var wash = item.querySelector('.sz-wash');
     item.addEventListener('mouseenter', function () { gsap.to(wash, { scaleX: 1, duration: 0.7, ease: ease }); });
     item.addEventListener('mouseleave', function () { gsap.to(wash, { scaleX: 0, duration: 0.5, ease: 'power2.in' }); });
@@ -200,6 +224,7 @@ except the two hero lines noted in HERO SPLIT.
   /* ---------- 6. counters ---------- */
   $('.counter').forEach(function (el) {
     var target = Number(el.getAttribute('data-target'));
+    if (!animate) { el.textContent = target + '+'; return; }
     var obj = { v: 0 };
     gsap.to(obj, {
       v: target, duration: 2, ease: 'power2.out',
@@ -212,7 +237,8 @@ except the two hero lines noted in HERO SPLIT.
   /* ---------- 7. location cards ---------- */
   $('.location-item').forEach(function (card, i) {
     var line = card.querySelector('.sz-topline');
-    gsap.to(line, {
+    if (!animate) gsap.set(line, { scaleX: 1 });
+    else gsap.to(line, {
       scaleX: 1, duration: 1, ease: ease, delay: 0.2 + i * 0.09,
       scrollTrigger: { trigger: card, start: 'top 88%' }
     });

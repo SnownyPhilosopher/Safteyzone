@@ -7,8 +7,8 @@ Add AFTER css/style.css. Replaces AOS entirely.
 [data-aos]{ opacity:1 !important; transform:none !important; }
 
 /* --- initial states (JS adds .sz-ready to <html> once GSAP is up) --- */
-html.sz-ready .sz-reveal{ opacity:0; }
-html.sz-ready .sz-mask-inner{ display:block; opacity:0; }
+html.sz-anim .sz-reveal{ opacity:0; }
+html.sz-anim .sz-mask-inner{ display:block; opacity:0; }
 .sz-mask{ display:block; overflow:hidden; padding-bottom:.04em; }
 
 /* --- hero --- */
@@ -132,7 +132,7 @@ html.sz-ready{ scroll-behavior:auto; }
 .lenis.lenis-smooth{ scroll-behavior:auto !important; }
 
 @media (prefers-reduced-motion:reduce){
-  html.sz-ready .sz-reveal{ opacity:1 !important; }
-  html.sz-ready .sz-mask-inner{ opacity:1 !important; }
+  html.sz-anim .sz-reveal{ opacity:1 !important; }
+  html.sz-anim .sz-mask-inner{ opacity:1 !important; }
   .sz-marquee{ transform:none !important; }
 }
